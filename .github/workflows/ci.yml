@@ -38,3 +38,18 @@ jobs:
             CODE_SIGN_STYLE=Manual \
             DEVELOPMENT_TEAM="" \
             build
+
+      # Zip with ditto first: uploading the .app folder directly would lose
+      # the executable bit and symlinks.
+      - name: Zip the .app
+        run: |
+          /usr/bin/ditto -c -k --sequesterRsrc --keepParent \
+            "build/Build/Products/Release/Desk Controller.app" \
+            "Desk-Controller.zip"
+
+      - name: Upload the .app
+        uses: actions/upload-artifact@v4
+        with:
+          name: Desk-Controller-${{ github.sha }}
+          path: Desk-Controller.zip
+          retention-days: 30
